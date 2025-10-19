@@ -87,6 +87,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -128,6 +131,11 @@ exports.Prisma.ViewScalarFieldEnum = {
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {
@@ -182,7 +190,7 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
+  "activeProvider": "postgresql",
   "inlineDatasources": {
     "db": {
       "url": {
@@ -191,8 +199,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id           String   @id @default(cuid())\n  email        String   @unique\n  name         String?\n  passwordHash String\n  role         Role     @default(EDITOR)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n\n  articles Article[]\n}\n\nmodel Article {\n  id             String    @id @default(cuid())\n  title          String\n  slug           String    @unique\n  excerpt        String?\n  content        String\n  imageUrl       String?\n  sourceText     String? // original FB post text pasted by admin\n  sourceImageUrl String? // optional screenshot or image from FB\n  topic          String? // article topic/category\n  isFeatured     Boolean   @default(false)\n  publishedAt    DateTime?\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n\n  author   User?   @relation(fields: [authorId], references: [id])\n  authorId String?\n\n  views View[]\n\n  @@index([publishedAt])\n  @@index([createdAt])\n  @@index([topic])\n}\n\nmodel View {\n  id        String   @id @default(cuid())\n  article   Article  @relation(fields: [articleId], references: [id])\n  articleId String\n  createdAt DateTime @default(now())\n  ipHash    String? // hashed IP for lightweight dedup without storing PII\n  userAgent String?\n\n  @@index([articleId, createdAt])\n}\n\nenum Role {\n  ADMIN\n  EDITOR\n}\n",
-  "inlineSchemaHash": "e386a647a5149f2f4b6cb02e52bebe14374d0c7e65de4b82a2240b0773d6b5c0",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id           String   @id @default(cuid())\n  email        String   @unique\n  name         String?\n  passwordHash String\n  role         Role     @default(EDITOR)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n\n  articles Article[]\n}\n\nmodel Article {\n  id             String    @id @default(cuid())\n  title          String\n  slug           String    @unique\n  excerpt        String?\n  content        String\n  imageUrl       String?\n  sourceText     String? // original FB post text pasted by admin\n  sourceImageUrl String? // optional screenshot or image from FB\n  topic          String? // article topic/category\n  isFeatured     Boolean   @default(false)\n  publishedAt    DateTime?\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n\n  author   User?   @relation(fields: [authorId], references: [id])\n  authorId String?\n\n  views View[]\n\n  @@index([publishedAt])\n  @@index([createdAt])\n  @@index([topic])\n}\n\nmodel View {\n  id        String   @id @default(cuid())\n  article   Article  @relation(fields: [articleId], references: [id])\n  articleId String\n  createdAt DateTime @default(now())\n  ipHash    String? // hashed IP for lightweight dedup without storing PII\n  userAgent String?\n\n  @@index([articleId, createdAt])\n}\n\nenum Role {\n  ADMIN\n  EDITOR\n}\n",
+  "inlineSchemaHash": "e3754b27b43bed5332033a9b54890f25c6b267886e62fa8954e43f4df42b6f1d",
   "copyEngine": true
 }
 
