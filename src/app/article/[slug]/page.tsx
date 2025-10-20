@@ -154,11 +154,19 @@ export default async function ArticlePage({ params }: Props) {
                 <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm font-semibold">
                   NEWS
                 </span>
-                {article.topic && (
-                  <span className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-full text-sm font-semibold">
-                    {article.topic.toUpperCase()}
-                  </span>
-                )}
+                {Array.isArray((article as any).topics) &&
+                  (article as any).topics.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {((article as any).topics as string[]).map((t) => (
+                        <span
+                          key={t}
+                          className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-full text-sm font-semibold"
+                        >
+                          {t.toUpperCase()}
+                        </span>
+                      ))}
+                    </div>
+                  )}
               </div>
 
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-6">

@@ -197,7 +197,7 @@ export default async function AdminDashboard() {
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Topic
+                      Topics
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Views (24h / Total)
@@ -239,10 +239,18 @@ export default async function AdminDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {article.topic ? (
-                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                            {article.topic}
-                          </span>
+                        {Array.isArray((article as any).topics) &&
+                        (article as any).topics.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {((article as any).topics as string[]).map((t) => (
+                              <span
+                                key={t}
+                                className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+                              >
+                                {t}
+                              </span>
+                            ))}
+                          </div>
                         ) : (
                           <span className="text-xs text-gray-400 dark:text-gray-500">
                             No topic

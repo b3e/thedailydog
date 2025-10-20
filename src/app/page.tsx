@@ -7,7 +7,7 @@ async function getData(topic?: string) {
       where: {
         isFeatured: true,
         publishedAt: { not: null },
-        ...(topic ? { topic } : {}),
+        ...(topic ? { topics: { has: topic } } : {}),
       },
       orderBy: { publishedAt: "desc" },
       take: 4,
@@ -15,7 +15,7 @@ async function getData(topic?: string) {
     prisma.article.findMany({
       where: {
         publishedAt: { not: null },
-        ...(topic ? { topic } : {}),
+        ...(topic ? { topics: { has: topic } } : {}),
       },
       orderBy: { publishedAt: "desc" },
       take: 12,
@@ -40,7 +40,10 @@ async function getData(topic?: string) {
         }
 
         const articles = await prisma.article.findMany({
-          where: { id: { in: topArticleIds }, ...(topic ? { topic } : {}) },
+          where: {
+            id: { in: topArticleIds },
+            ...(topic ? { topics: { has: topic } } : {}),
+          },
         });
 
         // Create a map for sorting
@@ -164,11 +167,19 @@ export default async function Home({
                       <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs font-semibold">
                         FEATURED
                       </span>
-                      {article.topic && (
-                        <span className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded text-xs font-semibold">
-                          {article.topic}
-                        </span>
-                      )}
+                      {Array.isArray((article as any).topics) &&
+                        (article as any).topics.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {((article as any).topics as string[]).map((t) => (
+                              <span
+                                key={t}
+                                className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded text-xs font-semibold"
+                              >
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       <span className="text-gray-500 dark:text-gray-400 text-sm">
                         {article.publishedAt?.toLocaleDateString()}
                       </span>
@@ -277,11 +288,19 @@ export default async function Home({
                       <span className="text-gray-500 dark:text-gray-400 text-sm">
                         {article.publishedAt?.toLocaleDateString()}
                       </span>
-                      {article.topic && (
-                        <span className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded text-xs font-semibold">
-                          {article.topic}
-                        </span>
-                      )}
+                      {Array.isArray((article as any).topics) &&
+                        (article as any).topics.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {((article as any).topics as string[]).map((t) => (
+                              <span
+                                key={t}
+                                className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded text-xs font-semibold"
+                              >
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                     </div>
                     {article.isFeatured && (
                       <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded text-xs font-semibold">
