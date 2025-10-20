@@ -169,3 +169,49 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+          <nav className="px-4 py-3 space-y-1">
+            <Link
+              onClick={() => setMobileOpen(false)}
+              href="/"
+              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Home
+            </Link>
+            <Link
+              onClick={() => setMobileOpen(false)}
+              href="/?topic=Politics"
+              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Politics
+            </Link>
+            <Link
+              onClick={() => setMobileOpen(false)}
+              href="/?topic=Economy"
+              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Economy
+            </Link>
+            <Link
+              onClick={() => setMobileOpen(false)}
+              href="/?topic=Culture"
+              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Culture
+            </Link>
+            <Link
+              onClick={() => setMobileOpen(false)}
+              href="/?topic=Opinion"
+              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Opinion
+            </Link>
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+}
