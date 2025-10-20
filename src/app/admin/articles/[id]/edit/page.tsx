@@ -67,10 +67,23 @@ export default async function EditArticlePage({ params }: Props) {
             action={async (formData) => {
               "use server";
               const title = formData.get("title") as string;
-              const slug = title
+              let slug = title
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, "-")
                 .replace(/(^-|-$)/g, "");
+
+              // Generate unique slug if it already exists (excluding current article)
+              let counter = 1;
+              while (
+                await prisma.article.findFirst({ where: { slug, NOT: { id } } })
+              ) {
+                slug = `${title
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, "-")
+                  .replace(/(^-|-$)/g, "")}-${counter}`;
+                counter++;
+              }
+
               const excerpt = formData.get("excerpt") as string;
               const content = formData.get("content") as string;
               const imageUrl = formData.get("imageUrl") as string;
