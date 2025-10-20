@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { authOptions } from "@/lib/auth";
+import DeleteButton from "@/components/DeleteButton";
 
 interface Props {
   params: { id: string };
@@ -294,6 +295,7 @@ export default async function EditArticlePage({ params }: Props) {
                 >
                   Cancel
                 </a>
+                <DeleteButton id={article.id} redirectTo="/admin" />
               </div>
             </div>
           </form>

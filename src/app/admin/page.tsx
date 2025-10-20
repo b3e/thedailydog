@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
+import DeleteButton from "@/components/DeleteButton";
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
@@ -249,7 +250,7 @@ export default async function AdminDashboard() {
                         {article.createdAt.toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex gap-3">
+                        <div className="flex gap-3 items-center">
                           <Link
                             href={`/admin/articles/${article.id}/edit`}
                             className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-150"
@@ -263,6 +264,7 @@ export default async function AdminDashboard() {
                           >
                             View
                           </Link>
+                          <DeleteButton id={article.id} />
                         </div>
                       </td>
                     </tr>

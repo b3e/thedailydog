@@ -69,9 +69,9 @@ export default async function Home({
     <div className="space-y-8">
       {/* Topic header */}
       {topic && (
-        <div className="border-b border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 backdrop-blur">
+        <div className="border-b border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 mb-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">
               {topic}
             </h1>
           </div>
