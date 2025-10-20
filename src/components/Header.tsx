@@ -49,7 +49,7 @@ export default function Header() {
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
               <img
-                src="/logo-slogan.png"
+                src={isDark ? "/logo-slogan-dark.png" : "/logo-slogan.png"}
                 alt="Daily Dog Logo"
                 className="h-18 object-contain group-hover:scale-105 transition-transform duration-200"
               />
@@ -71,7 +71,7 @@ export default function Header() {
                   href={link.href}
                   className={`text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200 ${
                     isActive
-                      ? "underline decoration-[#487ca7] underline-offset-4"
+                      ? "underline decoration-[#487ca7] decoration-4 underline-offset-4"
                       : ""
                   }`}
                 >
@@ -162,7 +162,7 @@ export default function Header() {
                   href={link.href}
                   className={`block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 ${
                     isActive
-                      ? "underline decoration-[#487ca7] underline-offset-4"
+                      ? "underline decoration-[#487ca7] decoration-4 underline-offset-4"
                       : ""
                   }`}
                 >

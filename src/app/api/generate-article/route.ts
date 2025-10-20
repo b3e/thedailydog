@@ -133,7 +133,7 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
         n: 1,
       });
 
-      if (imageResponse.data[0]?.url) {
+      if (imageResponse.data && imageResponse.data[0]?.url) {
         finalImageUrl = imageResponse.data[0].url;
         console.log("DALL-E generated image URL:", finalImageUrl);
       }
