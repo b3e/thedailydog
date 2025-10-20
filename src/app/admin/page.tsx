@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import DeleteButton from "@/components/DeleteButton";
+import type { Article } from "@prisma/client";
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
@@ -239,10 +240,10 @@ export default async function AdminDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {Array.isArray((article as any).topics) &&
-                        (article as any).topics.length > 0 ? (
+                        {Array.isArray((article as Article).topics) &&
+                        (article as Article).topics.length > 0 ? (
                           <div className="flex flex-wrap gap-1">
-                            {((article as any).topics as string[]).map((t) => (
+                            {(article as Article).topics.map((t) => (
                               <span
                                 key={t}
                                 className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
