@@ -32,20 +32,18 @@ export default function Header() {
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
               <img
-                src="/logo.png"
+                src="/logo-slogan.png"
                 alt="Daily Dog Logo"
-                className="w-12 h-12 object-contain group-hover:scale-105 transition-transform duration-200"
+                className="h-18 object-contain group-hover:scale-105 transition-transform duration-200"
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm text-gray-600 dark:text-gray-300 font-medium italic">
-                Guarding America's Values.
-              </span>
+              <span className="sr-only">Guarding America's Values.</span>
             </div>
           </Link>
 
