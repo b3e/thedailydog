@@ -52,22 +52,26 @@ Your task is to transform Facebook post content into professional, well-structur
 
 Format your response as JSON with these fields:
 {
-  "title": "Compelling headline (max 100 characters - keep it concise but descriptive)",
+  "title": "Compelling headline (max 70 characters - keep it concise but descriptive)",
   "excerpt": "Brief summary (max 150 characters)",
-  "content": "Full article in HTML format with proper paragraphs, headings, etc."
+  "content": "Full article body in HTML format with proper paragraphs, headings, etc."
 }
 
-The content should be 3-5 paragraphs with proper HTML tags like <p>, <h2>, <h3>, etc.
+IMPORTANT: The content field should contain ONLY the article body paragraphs. Do NOT repeat the title or excerpt in the content. Start directly with the main article content using <p> tags.
 
-If you cite facts or refer to external sources, include a References section at the end of the HTML with this exact structure so citations render properly:
+The content should be 3-5 paragraphs with proper HTML tags like <p>, <h2>, <h3>, etc. Do not include the title or excerpt in the content section.
 
+IMPORTANT: Only include a References section if you are actually citing specific external sources with real URLs. Do NOT include example references or placeholder URLs. If you don't have specific sources to cite, do not include a References section at all.
+
+When you do cite real sources, use this format:
+- In the text: Use bracketed citation markers like [1], [2], etc., immediately after the relevant sentence
+- At the end: Include a References section with this structure:
 <h2>References</h2>
 <ol>
-  <li id="ref-1"><a href="https://example.com" target="_blank" rel="noopener noreferrer">Source title 1</a></li>
-  <li id="ref-2"><a href="https://example2.com" target="_blank" rel="noopener noreferrer">Source title 2</a></li>
+  <li id="ref-1"><a href="https://actual-source-url.com" target="_blank" rel="noopener noreferrer">Actual Source Title</a></li>
 </ol>
 
-When you reference a source inline, use bracketed citation markers like [1], [2], etc., immediately after the relevant sentence. Do not use footnote symbols or unicode objects; use plain text markers like [1].`,
+Do not use example.com or placeholder URLs. Only cite sources you can verify exist.`,
         },
         {
           role: "user",
@@ -103,10 +107,10 @@ When you reference a source inline, use bracketed citation markers like [1], [2]
       };
     }
 
-    // Ensure title doesn't exceed 100 characters
+    // Ensure title doesn't exceed 70 characters
     let finalTitle = generatedData.title || "Breaking News Update";
-    if (finalTitle.length > 100) {
-      finalTitle = finalTitle.substring(0, 97) + "...";
+    if (finalTitle.length > 70) {
+      finalTitle = finalTitle.substring(0, 67) + "...";
     }
 
     return NextResponse.json({
