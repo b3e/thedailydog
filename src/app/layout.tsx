@@ -52,7 +52,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Suspense fallback={<div className="h-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700" />}>
+        <Suspense
+          fallback={
+            <div className="h-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700" />
+          }
+        >
           <Header />
         </Suspense>
 

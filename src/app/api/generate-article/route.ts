@@ -49,7 +49,7 @@ Your task is to transform Facebook post content into professional, well-structur
 
 Format your response as JSON with these fields:
 {
-  "title": "Compelling headline (max 80 characters)",
+  "title": "Compelling headline (max 100 characters - keep it concise but descriptive)",
   "excerpt": "Brief summary (max 150 characters)",
   "content": "Full article in HTML format with proper paragraphs, headings, etc."
 }
@@ -93,8 +93,14 @@ When you reference a source inline, use bracketed citation markers like [1], [2]
       };
     }
 
+    // Ensure title doesn't exceed 100 characters
+    let finalTitle = generatedData.title || "Breaking News Update";
+    if (finalTitle.length > 100) {
+      finalTitle = finalTitle.substring(0, 97) + "...";
+    }
+
     return NextResponse.json({
-      title: generatedData.title || "Breaking News Update",
+      title: finalTitle,
       excerpt:
         generatedData.excerpt ||
         "Recent developments have sparked significant discussion and analysis.",
@@ -113,8 +119,12 @@ When you reference a source inline, use bracketed citation markers like [1], [2]
 function extractTitleFromResponse(response: string): string {
   const lines = response.split("\n");
   const firstLine = lines[0]?.trim();
-  if (firstLine && firstLine.length > 0 && firstLine.length < 100) {
-    return firstLine.replace(/^#+\s*/, ""); // Remove markdown headers
+  if (firstLine && firstLine.length > 0) {
+    let title = firstLine.replace(/^#+\s*/, ""); // Remove markdown headers
+    if (title.length > 100) {
+      title = title.substring(0, 97) + "...";
+    }
+    return title;
   }
   return "Breaking News Update";
 }
