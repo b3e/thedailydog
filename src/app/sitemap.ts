@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const articleUrls = articles.map((article) => ({
     url: `https://thedailydog.com/article/${article.slug}`,
     lastModified: article.updatedAt,
-    changeFrequency: "weekly" as const,
+    changeFrequency: "daily" as const,
     priority: 0.8,
   }));
 
@@ -20,12 +20,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1,
-    },
-    {
-      url: "https://thedailydog.com/admin",
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.3,
     },
     ...articleUrls,
   ];
