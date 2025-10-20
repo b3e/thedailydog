@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import type { Article } from "@prisma/client";
 
-async function getData(topic?: string) {
+type HomeData = {
+  featured: Article[];
+  latest: Article[];
+  trending: Article[];
+};
+
+async function getData(topic?: string): Promise<HomeData> {
   const [featured, latest, trending] = await Promise.all([
     prisma.article.findMany({
       where: {
@@ -20,40 +27,43 @@ async function getData(topic?: string) {
       orderBy: { publishedAt: "desc" },
       take: 12,
     }),
-    prisma.view
-      .groupBy({
-        by: ["articleId"],
-        where: {
-          createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-        },
-        _count: { _all: true },
-      })
-      .then(async (groups) => {
-        // Sort by count descending
-        const sortedGroups = groups.sort(
-          (a, b) => b._count._all - a._count._all
-        );
-        const topArticleIds = sortedGroups.slice(0, 6).map((g) => g.articleId);
-
-        if (topArticleIds.length === 0) {
-          return [];
-        }
-
-        const articles = await prisma.article.findMany({
+    (async (): Promise<Article[]> =>
+      prisma.view
+        .groupBy({
+          by: ["articleId"],
           where: {
-            id: { in: topArticleIds },
-            ...(topic ? { topics: { has: topic } } : {}),
+            createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
           },
-        });
+          _count: { _all: true },
+        })
+        .then(async (groups : Article[]) => {
+          // Sort by count descending
+          const sortedGroups = groups.sort(
+            (a, b) => b._count._all - a._count._all
+          );
+          const topArticleIds = sortedGroups
+            .slice(0, 6)
+            .map((g) => g.articleId);
 
-        // Create a map for sorting
-        const countMap = new Map(
-          sortedGroups.map((g) => [g.articleId, g._count._all])
-        );
-        return articles.sort(
-          (a, b) => (countMap.get(b.id) || 0) - (countMap.get(a.id) || 0)
-        );
-      }),
+          if (topArticleIds.length === 0) {
+            return [];
+          }
+
+          const articles = await prisma.article.findMany({
+            where: {
+              id: { in: topArticleIds },
+              ...(topic ? { topics: { has: topic } } : {}),
+            },
+          });
+
+          // Create a map for sorting
+          const countMap = new Map(
+            sortedGroups.map((g) => [g.articleId, g._count._all])
+          );
+          return articles.sort(
+            (a, b) => (countMap.get(b.id) || 0) - (countMap.get(a.id) || 0)
+          );
+        }))(),
   ]);
   return { featured, latest, trending };
 }

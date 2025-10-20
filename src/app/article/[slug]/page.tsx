@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import type { Article } from "@prisma/client";
 import Link from "next/link";
 import { headers } from "next/headers";
 import ShareBar from "@/components/ShareBar";
@@ -9,7 +10,14 @@ interface Props {
   params: { slug: string };
 }
 
-async function getArticle(slug: string) {
+async function getArticle(
+  slug: string
+): Promise<
+  | (Article & {
+      author: { id: string; name: string | null; email: string | null } | null;
+    })
+  | null
+> {
   const article = await prisma.article.findUnique({
     where: { slug },
     include: { author: true },
@@ -17,7 +25,10 @@ async function getArticle(slug: string) {
   return article;
 }
 
-async function getRelatedArticles(currentArticleId: string, limit: number = 3) {
+async function getRelatedArticles(
+  currentArticleId: string,
+  limit: number = 3
+): Promise<Article[]> {
   const articles = await prisma.article.findMany({
     where: {
       publishedAt: { not: null },
