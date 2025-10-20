@@ -31,7 +31,7 @@ model Article {
   imageUrl       String?
   sourceText     String?   // original FB post text pasted by admin
   sourceImageUrl String?   // optional screenshot or image from FB
-  topic          String?   // article topic/category
+  topics         String[]  // article topics/categories
   isFeatured     Boolean   @default(false)
   publishedAt    DateTime?
   createdAt      DateTime  @default(now())
@@ -44,7 +44,6 @@ model Article {
 
   @@index([publishedAt])
   @@index([createdAt])
-  @@index([topic])
 }
 
 model View {

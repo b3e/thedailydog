@@ -14,8 +14,19 @@ export default async function AdminDashboard() {
 
   const articles = await prisma.article.findMany({
     orderBy: { createdAt: "desc" },
-    include: { author: true },
+    include: { author: true, _count: { select: { views: true } } },
   });
+
+  // Compute 24h views per article
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const views24hGroups = await prisma.view.groupBy({
+    by: ["articleId"],
+    where: { createdAt: { gte: since } },
+    _count: { _all: true },
+  });
+  const views24hMap = new Map<string, number>(
+    views24hGroups.map((g) => [g.articleId, g._count._all])
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -189,6 +200,9 @@ export default async function AdminDashboard() {
                       Topic
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Views (24h / Total)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Featured
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -234,6 +248,10 @@ export default async function AdminDashboard() {
                             No topic
                           </span>
                         )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                        {views24hMap.get(article.id) ?? 0} /{" "}
+                        {article._count?.views ?? 0}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span

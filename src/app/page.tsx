@@ -79,7 +79,7 @@ export default async function Home({
       )}
       {/* Hero Section */}
       {hero && (
-        <section className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-900 text-white">
+        <section className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-900 bg-[url(/daily-d-bg.jpg)] bg-cover text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
@@ -101,7 +101,7 @@ export default async function Home({
                 )}
                 <Link
                   href={`/article/${hero.slug}`}
-                  className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                  className="inline-flex items-center px-8 py-4 bg-white text-[#487ca7] font-semibold rounded-lg hover:bg-gray-100 transition-colors duration-200"
                 >
                   Read Full Story
                   <svg
@@ -142,7 +142,7 @@ export default async function Home({
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Featured Stories
               </h2>
-              <div className="h-px bg-gradient-to-r from-blue-600 to-transparent flex-1 ml-6"></div>
+              <div className="h-px bg-gradient-to-r from-blue-600 bg-cover to-transparent flex-1 ml-6"></div>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {subFeatured.map((article) => (

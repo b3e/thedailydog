@@ -13,7 +13,7 @@ export default function NewArticlePage() {
     imageUrl: "",
     sourceText: "",
     sourceImageUrl: "",
-    topic: "",
+    topics: [] as string[],
     isFeatured: false,
     publish: false,
   });
@@ -253,40 +253,47 @@ export default function NewArticlePage() {
                     />
                   </div>
 
-                  <div>
-                    <label
-                      htmlFor="topic"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                    >
-                      Topic/Category
-                    </label>
-                    <select
-                      name="topic"
-                      id="topic"
-                      value={formData.topic}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          topic: e.target.value,
-                        }))
-                      }
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                    >
-                      <option value="">Select a topic...</option>
-                      <option value="Politics">Politics</option>
-                      <option value="Economy">Economy</option>
-                      <option value="Culture">Culture</option>
-                      <option value="Opinion">Opinion</option>
-                      <option value="Breaking News">Breaking News</option>
-                      <option value="International">International</option>
-                      <option value="Technology">Technology</option>
-                      <option value="Health">Health</option>
-                      <option value="Education">Education</option>
-                      <option value="Environment">Environment</option>
-                      <option value="Sports">Sports</option>
-                      <option value="Entertainment">Entertainment</option>
-                    </select>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Topics/Categories
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {[
+                      "Politics",
+                      "Economy",
+                      "Culture",
+                      "Opinion",
+                      "Breaking News",
+                      "International",
+                      "Technology",
+                      "Health",
+                      "Education",
+                      "Environment",
+                      "Sports",
+                      "Entertainment",
+                    ].map((t) => {
+                      const checked = formData.topics.includes(t);
+                      return (
+                        <label key={t} className="inline-flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                topics: e.target.checked
+                                  ? Array.from(new Set([...(prev.topics || []), t]))
+                                  : (prev.topics || []).filter((x) => x !== t),
+                              }))
+                            }
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">{t}</span>
+                        </label>
+                      );
+                    })}
                   </div>
+                </div>
 
                   <div>
                     <label

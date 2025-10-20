@@ -12,6 +12,11 @@ export async function POST(request: NextRequest) {
 
   try {
     const data = await request.json();
+    const topics: string[] = Array.isArray(data.topics)
+      ? (data.topics as string[]).filter((t) => typeof t === "string" && t.trim().length > 0)
+      : data.topic
+      ? [String(data.topic)]
+      : [];
 
     const article = await prisma.article.create({
       data: {
@@ -22,7 +27,7 @@ export async function POST(request: NextRequest) {
         imageUrl: data.imageUrl || null,
         sourceText: data.sourceText || null,
         sourceImageUrl: data.sourceImageUrl || null,
-        topic: data.topic || null,
+        topics,
         isFeatured: data.isFeatured || false,
         publishedAt: data.publish ? new Date() : null,
         authorId: session.user.id,

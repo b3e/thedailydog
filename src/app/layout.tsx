@@ -123,46 +123,22 @@ export default function RootLayout({
               <div>
                 <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
                 <ul className="space-y-2">
-                  <li>
-                    <a
-                      href="/"
-                      className="text-gray-400 hover:text-white transition-colors duration-200"
-                    >
-                      Home
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/"
-                      className="text-gray-400 hover:text-white transition-colors duration-200"
-                    >
-                      Politics
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/"
-                      className="text-gray-400 hover:text-white transition-colors duration-200"
-                    >
-                      Economy
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/"
-                      className="text-gray-400 hover:text-white transition-colors duration-200"
-                    >
-                      Culture
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/"
-                      className="text-gray-400 hover:text-white transition-colors duration-200"
-                    >
-                      Opinion
-                    </a>
-                  </li>
+                  {[
+                    { label: "Home", href: "/" },
+                    { label: "Politics", href: "/?topic=Politics" },
+                    { label: "Economy", href: "/?topic=Economy" },
+                    { label: "Culture", href: "/?topic=Culture" },
+                    { label: "Opinion", href: "/?topic=Opinion" },
+                  ].map((link) => (
+                    <li key={link.label}>
+                      <a
+                        href={link.href}
+                        className="text-gray-400 hover:text-white transition-colors duration-200"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
                 </ul>
               </div>
 

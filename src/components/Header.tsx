@@ -2,10 +2,22 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export default function Header() {
   const [isDark, setIsDark] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTopic = searchParams?.get("topic") || "";
+
+  const navLinks: { label: string; href: string; topic?: string }[] = [
+    { label: "Home", href: "/" },
+    { label: "Politics", href: "/?topic=Politics", topic: "Politics" },
+    { label: "Economy", href: "/?topic=Economy", topic: "Economy" },
+    { label: "Culture", href: "/?topic=Culture", topic: "Culture" },
+    { label: "Opinion", href: "/?topic=Opinion", topic: "Opinion" },
+  ];
 
   useEffect(() => {
     // Initialize theme from localStorage or system preference
@@ -49,61 +61,28 @@ export default function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200"
-            >
-              Home
-            </Link>
-            <Link
-              href="/?topic=Politics"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200"
-            >
-              Politics
-            </Link>
-            <Link
-              href="/?topic=Economy"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200"
-            >
-              Economy
-            </Link>
-            <Link
-              href="/?topic=Culture"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200"
-            >
-              Culture
-            </Link>
-            <Link
-              href="/?topic=Opinion"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200"
-            >
-              Opinion
-            </Link>
+            {navLinks.map((link) => {
+              const isActive = link.topic
+                ? currentTopic === link.topic
+                : pathname === "/" && !currentTopic;
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={`text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200 ${
+                    isActive
+                      ? "underline decoration-[#487ca7] underline-offset-4"
+                      : ""
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
-            {/* Search (placeholder) */}
-            <button
-              type="button"
-              className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200"
-              aria-label="Search"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
-
             {/* Dark mode toggle */}
             <button
               type="button"
@@ -172,41 +151,25 @@ export default function Header() {
       {mobileOpen && (
         <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
           <nav className="px-4 py-3 space-y-1">
-            <Link
-              onClick={() => setMobileOpen(false)}
-              href="/"
-              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Home
-            </Link>
-            <Link
-              onClick={() => setMobileOpen(false)}
-              href="/?topic=Politics"
-              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Politics
-            </Link>
-            <Link
-              onClick={() => setMobileOpen(false)}
-              href="/?topic=Economy"
-              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Economy
-            </Link>
-            <Link
-              onClick={() => setMobileOpen(false)}
-              href="/?topic=Culture"
-              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Culture
-            </Link>
-            <Link
-              onClick={() => setMobileOpen(false)}
-              href="/?topic=Opinion"
-              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Opinion
-            </Link>
+            {navLinks.map((link) => {
+              const isActive = link.topic
+                ? currentTopic === link.topic
+                : pathname === "/" && !currentTopic;
+              return (
+                <Link
+                  key={link.label}
+                  onClick={() => setMobileOpen(false)}
+                  href={link.href}
+                  className={`block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                    isActive
+                      ? "underline decoration-[#487ca7] underline-offset-4"
+                      : ""
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       )}
