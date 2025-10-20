@@ -1,15 +1,22 @@
 import Link from "next/link";
 import { prisma } from "../lib/prisma";
 
-async function getData() {
+async function getData(topic?: string) {
   const [featured, latest, trending] = await Promise.all([
     prisma.article.findMany({
-      where: { isFeatured: true, publishedAt: { not: null } },
+      where: {
+        isFeatured: true,
+        publishedAt: { not: null },
+        ...(topic ? { topic } : {}),
+      },
       orderBy: { publishedAt: "desc" },
       take: 4,
     }),
     prisma.article.findMany({
-      where: { publishedAt: { not: null } },
+      where: {
+        publishedAt: { not: null },
+        ...(topic ? { topic } : {}),
+      },
       orderBy: { publishedAt: "desc" },
       take: 12,
     }),
@@ -33,7 +40,7 @@ async function getData() {
         }
 
         const articles = await prisma.article.findMany({
-          where: { id: { in: topArticleIds } },
+          where: { id: { in: topArticleIds }, ...(topic ? { topic } : {}) },
         });
 
         // Create a map for sorting
@@ -48,8 +55,13 @@ async function getData() {
   return { featured, latest, trending };
 }
 
-export default async function Home() {
-  const { featured, latest, trending } = await getData();
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: { topic?: string };
+}) {
+  const topic = searchParams?.topic;
+  const { featured, latest, trending } = await getData(topic);
   const hero = featured[0] ?? latest[0];
   const subFeatured = featured[0] ? featured.slice(1) : latest.slice(1, 4);
 
