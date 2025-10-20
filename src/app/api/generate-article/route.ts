@@ -54,7 +54,8 @@ Format your response as JSON with these fields:
 {
   "title": "Compelling headline (max 70 characters - keep it concise but descriptive)",
   "excerpt": "Brief summary (max 150 characters)",
-  "content": "Full article body in HTML format with proper paragraphs, headings, etc."
+  "content": "Full article body in HTML format with proper paragraphs, headings, etc.",
+  "suggestedImageUrl": "URL of a suitable image for this article (or null if no good image found)"
 }
 
 IMPORTANT: The content field should contain ONLY the article body paragraphs. Do NOT repeat the title or excerpt in the content. Start directly with the main article content using <p> tags.
@@ -75,7 +76,9 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
         },
         {
           role: "user",
-          content: `Please transform this Facebook post into a professional news article:\n\n${sourceText}`,
+          content: `Please transform this Facebook post into a professional news article:\n\n${sourceText}${
+            sourceImageUrl ? `\n\nSource Image URL: ${sourceImageUrl}` : ""
+          }\n\nIf a source image is provided, consider it when writing the article. Also suggest a suitable image URL for the article (preferably from reliable news sources, government sites, or official social media accounts). If no good image is found, set suggestedImageUrl to null.`,
         },
       ],
       temperature: 0.7,
@@ -119,7 +122,7 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
         generatedData.excerpt ||
         "Recent developments have sparked significant discussion and analysis.",
       content: generatedData.content || response,
-      imageUrl: sourceImageUrl || null,
+      imageUrl: generatedData.suggestedImageUrl || sourceImageUrl || null,
     });
   } catch (error) {
     console.error("Error generating article:", error);

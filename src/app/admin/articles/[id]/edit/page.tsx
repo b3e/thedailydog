@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import DeleteButton from "@/components/DeleteButton";
 import type { Article } from "@prisma/client";
+import Link from "next/link";
 
 interface Props {
   params: { id: string };
@@ -314,12 +315,12 @@ export default async function EditArticlePage({ params }: Props) {
                   </svg>
                   Update Article
                 </button>
-                <a
+                <Link
                   href="/admin"
                   className="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
                 >
                   Cancel
-                </a>
+                </Link>
                 <DeleteButton id={article.id} redirectTo="/admin" />
               </div>
             </div>
