@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { prisma } from "../../../lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
@@ -30,7 +30,7 @@ async function getRelatedArticles(currentArticleId: string, limit: number = 3) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug } = params;
   const article = await getArticle(slug);
 
   if (!article) {
@@ -74,7 +74,7 @@ async function trackView(articleId: string, ipHash: string, userAgent: string) {
 }
 
 export default async function ArticlePage({ params }: Props) {
-  const { slug } = await params;
+  const { slug } = params;
   const article = await getArticle(slug);
 
   if (!article || !article.publishedAt) {
@@ -91,7 +91,7 @@ export default async function ArticlePage({ params }: Props) {
   // Get related articles
   const relatedArticles = await getRelatedArticles(article.id);
   // Build absolute URL for sharing based on current request headers
-  const h = headers();
+  const h = await headers();
   const protocol = h.get("x-forwarded-proto") ?? "http";
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
   const articleUrl = `${protocol}://${host}/article/${article.slug}`;
@@ -154,19 +154,18 @@ export default async function ArticlePage({ params }: Props) {
                 <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm font-semibold">
                   NEWS
                 </span>
-                {Array.isArray((article as any).topics) &&
-                  (article as any).topics.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {((article as any).topics as string[]).map((t) => (
-                        <span
-                          key={t}
-                          className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-full text-sm font-semibold"
-                        >
-                          {t.toUpperCase()}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                {Array.isArray(article.topics) && article.topics.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {article.topics.map((t) => (
+                      <span
+                        key={t}
+                        className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-full text-sm font-semibold"
+                      >
+                        {t.toUpperCase()}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-6">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { prisma } from "../lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 async function getData(topic?: string) {
   const [featured, latest, trending] = await Promise.all([
@@ -61,9 +61,9 @@ async function getData(topic?: string) {
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ topic?: string }>;
+  searchParams: { topic?: string };
 }) {
-  const { topic } = await searchParams;
+  const { topic } = searchParams;
   const { featured, latest, trending } = await getData(topic);
   const hero = featured[0] ?? latest[0];
   const subFeatured = featured[0] ? featured.slice(1) : latest.slice(1, 4);
@@ -167,10 +167,10 @@ export default async function Home({
                       <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs font-semibold">
                         FEATURED
                       </span>
-                      {Array.isArray((article as any).topics) &&
-                        (article as any).topics.length > 0 && (
+                      {Array.isArray(article.topics) &&
+                        article.topics.length > 0 && (
                           <div className="flex flex-wrap gap-1">
-                            {((article as any).topics as string[]).map((t) => (
+                            {article.topics.map((t) => (
                               <span
                                 key={t}
                                 className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded text-xs font-semibold"
@@ -288,10 +288,10 @@ export default async function Home({
                       <span className="text-gray-500 dark:text-gray-400 text-sm">
                         {article.publishedAt?.toLocaleDateString()}
                       </span>
-                      {Array.isArray((article as any).topics) &&
-                        (article as any).topics.length > 0 && (
+                      {Array.isArray(article.topics) &&
+                        article.topics.length > 0 && (
                           <div className="flex flex-wrap gap-1">
-                            {((article as any).topics as string[]).map((t) => (
+                            {article.topics.map((t) => (
                               <span
                                 key={t}
                                 className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded text-xs font-semibold"
