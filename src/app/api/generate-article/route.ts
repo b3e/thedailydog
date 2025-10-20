@@ -31,6 +31,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log("Starting OpenAI API call...");
+    console.log("Source text length:", sourceText.length);
+
     // Generate article content using ChatGPT
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -75,16 +78,23 @@ When you reference a source inline, use bracketed citation markers like [1], [2]
       max_tokens: 2000,
     });
 
+    console.log("OpenAI API call completed successfully");
+
     const response = completion.choices[0]?.message?.content;
 
     if (!response) {
       throw new Error("No response from OpenAI");
     }
 
+    console.log("OpenAI response length:", response.length);
+    console.log("OpenAI response preview:", response.substring(0, 200) + "...");
+
     let generatedData;
     try {
       generatedData = JSON.parse(response);
-    } catch {
+      console.log("Successfully parsed JSON response");
+    } catch (parseError) {
+      console.log("JSON parsing failed, using fallback:", parseError);
       // Fallback if JSON parsing fails
       generatedData = {
         title: extractTitleFromResponse(response),
@@ -109,8 +119,29 @@ When you reference a source inline, use bracketed citation markers like [1], [2]
     });
   } catch (error) {
     console.error("Error generating article:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+
+    // Handle specific OpenAI errors
+    if (error instanceof Error && error.message.includes("429")) {
+      return NextResponse.json(
+        {
+          error:
+            "OpenAI API quota exceeded. Please check your billing details.",
+          details:
+            "You have exceeded your current OpenAI API quota. Please add credits to your account.",
+        },
+        { status: 429 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to generate article" },
+      {
+        error: "Failed to generate article",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }

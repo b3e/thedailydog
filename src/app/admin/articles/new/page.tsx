@@ -45,7 +45,18 @@ export default function NewArticlePage() {
           imageUrl: generated.imageUrl || prev.imageUrl,
         }));
       } else {
-        alert("Failed to generate article");
+        const errorData = await response.json();
+        if (response.status === 429) {
+          alert(
+            "OpenAI API quota exceeded. Please check your billing details and add credits to your account."
+          );
+        } else {
+          alert(
+            `Failed to generate article: ${
+              errorData.details || errorData.error || "Unknown error"
+            }`
+          );
+        }
       }
     } catch (error) {
       console.error("Error generating article:", error);
@@ -253,47 +264,56 @@ export default function NewArticlePage() {
                     />
                   </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Topics/Categories
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {[
-                      "Politics",
-                      "Economy",
-                      "Culture",
-                      "Opinion",
-                      "Breaking News",
-                      "International",
-                      "Technology",
-                      "Health",
-                      "Education",
-                      "Environment",
-                      "Sports",
-                      "Entertainment",
-                    ].map((t) => {
-                      const checked = formData.topics.includes(t);
-                      return (
-                        <label key={t} className="inline-flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                topics: e.target.checked
-                                  ? Array.from(new Set([...(prev.topics || []), t]))
-                                  : (prev.topics || []).filter((x) => x !== t),
-                              }))
-                            }
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
-                          />
-                          <span className="text-sm text-gray-700 dark:text-gray-300">{t}</span>
-                        </label>
-                      );
-                    })}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Topics/Categories
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {[
+                        "Politics",
+                        "Economy",
+                        "Culture",
+                        "Opinion",
+                        "Breaking News",
+                        "International",
+                        "Technology",
+                        "Health",
+                        "Education",
+                        "Environment",
+                        "Sports",
+                        "Entertainment",
+                      ].map((t) => {
+                        const checked = formData.topics.includes(t);
+                        return (
+                          <label
+                            key={t}
+                            className="inline-flex items-center space-x-2"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  topics: e.target.checked
+                                    ? Array.from(
+                                        new Set([...(prev.topics || []), t])
+                                      )
+                                    : (prev.topics || []).filter(
+                                        (x) => x !== t
+                                      ),
+                                }))
+                              }
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+                            />
+                            <span className="text-sm text-gray-700 dark:text-gray-300">
+                              {t}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
 
                   <div>
                     <label
