@@ -10,9 +10,7 @@ interface Props {
   params: { slug: string };
 }
 
-async function getArticle(
-  slug: string
-): Promise<
+async function getArticle(slug: string): Promise<
   | (Article & {
       author: { id: string; name: string | null; email: string | null } | null;
     })

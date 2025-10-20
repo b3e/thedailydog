@@ -36,7 +36,7 @@ async function getData(topic?: string): Promise<HomeData> {
           },
           _count: { _all: true },
         })
-        .then(async (groups : Article[]) => {
+        .then(async (groups: Article[]) => {
           // Sort by count descending
           const sortedGroups = groups.sort(
             (a, b) => b._count._all - a._count._all

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import DeleteButton from "@/components/DeleteButton";
+import type { Article } from "@prisma/client";
 
 interface Props {
   params: { id: string };
@@ -142,11 +143,21 @@ export default async function EditArticlePage({ params }: Props) {
                         "Sports",
                         "Entertainment",
                       ].map((t) => {
-                        const checked = Array.isArray((article as any).topics)
-                          ? ((article as any).topics as string[]).includes(t)
-                          : ((article as any).topic ? [String((article as any).topic)] : []).includes(t);
+                        const articleWithTopics = article as Article & {
+                          topics?: string[];
+                          topic?: string;
+                        };
+                        const checked = Array.isArray(articleWithTopics.topics)
+                          ? articleWithTopics.topics.includes(t)
+                          : (articleWithTopics.topic
+                              ? [String(articleWithTopics.topic)]
+                              : []
+                            ).includes(t);
                         return (
-                          <label key={t} className="inline-flex items-center space-x-2">
+                          <label
+                            key={t}
+                            className="inline-flex items-center space-x-2"
+                          >
                             <input
                               type="checkbox"
                               name="topics"
@@ -154,7 +165,9 @@ export default async function EditArticlePage({ params }: Props) {
                               defaultChecked={checked}
                               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
                             />
-                            <span className="text-sm text-gray-700 dark:text-gray-300">{t}</span>
+                            <span className="text-sm text-gray-700 dark:text-gray-300">
+                              {t}
+                            </span>
                           </label>
                         );
                       })}
