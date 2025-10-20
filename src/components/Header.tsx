@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 export default function Header() {
   const [isDark, setIsDark] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
-  const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [isDesktop, setIsDesktop] = useState<boolean>(false);
 
   useEffect(() => {
     // Initialize theme from localStorage or system preference
@@ -22,22 +20,6 @@ export default function Header() {
     document.documentElement.classList.toggle("dark", shouldDark);
   }, []);
 
-  useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 10);
-    const onResize = () =>
-      setIsDesktop(window.matchMedia("(min-width: 768px)").matches);
-    onResize();
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
-
-  const showCenterLogo = isDesktop && !isScrolled;
-
   const toggleTheme = () => {
     const next = !isDark;
     setIsDark(next);
@@ -48,48 +30,27 @@ export default function Header() {
   };
 
   return (
-    <header
-      className={`bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-all duration-200 ${
-        isScrolled ? "shadow-sm" : ""
-      }`}
-    >
+    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className={`relative flex items-center ${
-            showCenterLogo ? "justify-center" : "justify-between"
-          } h-20`}
-        >
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link
-            href="/"
-            className={`flex items-center space-x-3 group transition-all duration-200 ${
-              showCenterLogo ? "absolute left-1/2 -translate-x-1/2" : ""
-            }`}
-          >
+          <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
               <img
-                src={showCenterLogo ? "/logo-slogan.png" : "/logo.png"}
-                alt={
-                  showCenterLogo
-                    ? "The Daily Dog — Guarding America's Values."
-                    : "The Daily Dog"
-                }
-                className={`${
-                  showCenterLogo ? "h-18" : "h-12"
-                } w-auto object-contain group-hover:scale-105 transition-transform duration-200`}
+                src="/logo.png"
+                alt="Daily Dog Logo"
+                className="w-12 h-12 object-contain group-hover:scale-105 transition-transform duration-200"
               />
             </div>
             <div className="flex flex-col">
-              <span className="sr-only">Guarding America's Values.</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300 font-medium italic">
+                Guarding America's Values.
+              </span>
             </div>
           </Link>
 
           {/* Navigation */}
-          <nav
-            className={`hidden md:flex items-center space-x-8 transition-opacity duration-150 ${
-              showCenterLogo ? "opacity-0 pointer-events-none" : "opacity-100"
-            }`}
-          >
+          <nav className="hidden md:flex items-center space-x-8">
             <Link
               href="/"
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200"
@@ -123,11 +84,7 @@ export default function Header() {
           </nav>
 
           {/* Right side actions */}
-          <div
-            className={`flex items-center space-x-4 transition-opacity duration-150 ${
-              showCenterLogo ? "opacity-0 pointer-events-none" : "opacity-100"
-            }`}
-          >
+          <div className="flex items-center space-x-4">
             {/* Search (placeholder) */}
             <button
               type="button"
@@ -212,49 +169,3 @@ export default function Header() {
           </div>
         </div>
       </div>
-
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-          <nav className="px-4 py-3 space-y-1">
-            <Link
-              onClick={() => setMobileOpen(false)}
-              href="/"
-              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Home
-            </Link>
-            <Link
-              onClick={() => setMobileOpen(false)}
-              href="/?topic=Politics"
-              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Politics
-            </Link>
-            <Link
-              onClick={() => setMobileOpen(false)}
-              href="/?topic=Economy"
-              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Economy
-            </Link>
-            <Link
-              onClick={() => setMobileOpen(false)}
-              href="/?topic=Culture"
-              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Culture
-            </Link>
-            <Link
-              onClick={() => setMobileOpen(false)}
-              href="/?topic=Opinion"
-              className="block px-2 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Opinion
-            </Link>
-          </nav>
-        </div>
-      )}
-    </header>
-  );
-}

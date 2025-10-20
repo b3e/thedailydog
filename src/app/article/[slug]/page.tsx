@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "../../../lib/prisma";
 import { Metadata } from "next";
 import Link from "next/link";
+import { headers } from "next/headers";
 import ShareBar from "@/components/ShareBar";
 
 interface Props {
@@ -89,13 +90,37 @@ export default async function ArticlePage({ params }: Props) {
 
   // Get related articles
   const relatedArticles = await getRelatedArticles(article.id);
+  // Build absolute URL for sharing based on current request headers
+  const h = headers();
+  const protocol = h.get("x-forwarded-proto") ?? "http";
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
+  const articleUrl = `${protocol}://${host}/article/${article.slug}`;
 
-  // Prepare HTML: clean artifacts, make links safe, convert [n] citations to links
+  // Prepare HTML: clean artifacts, support plain-text newlines, make links safe, convert [n] citations to links
   const processedHtml = (() => {
     const raw = article.content || "";
     const stripped = raw.replace(/[\uFFFC\uFFFD]/g, "");
+    // If content looks like plain text (no common HTML block tags), convert newlines to HTML
+    const looksPlainText =
+      !/(<\s*(p|h1|h2|h3|h4|h5|h6|ul|ol|li|blockquote|img|a|div|section)\b)/i.test(
+        stripped
+      );
+    const asHtml = looksPlainText
+      ? (() => {
+          const escaped = stripped
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+          const withBreaks = escaped
+            .split(/\n\n+/)
+            .map((para) => para.replace(/\n/g, "<br />"))
+            .map((para) => `<p>${para}</p>`)
+            .join("");
+          return withBreaks;
+        })()
+      : stripped;
     // add target and rel to links if missing
-    const withTarget = stripped.replace(
+    const withTarget = asHtml.replace(
       /<a(?![^>]*\btarget=)/gi,
       '<a target="_blank" rel="noopener noreferrer"'
     );
@@ -237,10 +262,7 @@ export default async function ArticlePage({ params }: Props) {
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Share this article:
                   </span>
-                  <ShareBar
-                    url={`https://thedailydog.com/article/${article.slug}`}
-                    title={article.title}
-                  />
+                  <ShareBar url={articleUrl} title={article.title} />
                 </div>
                 <Link
                   href="/"
