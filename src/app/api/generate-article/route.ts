@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     // Generate article content using ChatGPT
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -54,7 +54,17 @@ Format your response as JSON with these fields:
   "content": "Full article in HTML format with proper paragraphs, headings, etc."
 }
 
-The content should be 3-5 paragraphs with proper HTML tags like <p>, <h2>, <h3>, etc.`,
+The content should be 3-5 paragraphs with proper HTML tags like <p>, <h2>, <h3>, etc.
+
+If you cite facts or refer to external sources, include a References section at the end of the HTML with this exact structure so citations render properly:
+
+<h2>References</h2>
+<ol>
+  <li id="ref-1"><a href="https://example.com" target="_blank" rel="noopener noreferrer">Source title 1</a></li>
+  <li id="ref-2"><a href="https://example2.com" target="_blank" rel="noopener noreferrer">Source title 2</a></li>
+</ol>
+
+When you reference a source inline, use bracketed citation markers like [1], [2], etc., immediately after the relevant sentence. Do not use footnote symbols or unicode objects; use plain text markers like [1].`,
         },
         {
           role: "user",

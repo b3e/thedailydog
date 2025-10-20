@@ -58,9 +58,9 @@ async function getData(topic?: string) {
 export default async function Home({
   searchParams,
 }: {
-  searchParams?: { topic?: string };
+  searchParams: Promise<{ topic?: string }>;
 }) {
-  const topic = searchParams?.topic;
+  const { topic } = await searchParams;
   const { featured, latest, trending } = await getData(topic);
   const hero = featured[0] ?? latest[0];
   const subFeatured = featured[0] ? featured.slice(1) : latest.slice(1, 4);
@@ -358,7 +358,7 @@ export default async function Home({
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white"
+                className="flex-1 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white border-2 border-gray-300 dark:border-gray-600"
               />
               <button className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors duration-200">
                 Subscribe

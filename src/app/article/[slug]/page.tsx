@@ -89,6 +89,28 @@ export default async function ArticlePage({ params }: Props) {
   // Get related articles
   const relatedArticles = await getRelatedArticles(article.id);
 
+  // Prepare HTML: clean artifacts, make links safe, convert [n] citations to links
+  const processedHtml = (() => {
+    const raw = article.content || "";
+    const stripped = raw.replace(/[\uFFFC\uFFFD]/g, "");
+    // add target and rel to links if missing
+    const withTarget = stripped.replace(
+      /<a(?![^>]*\btarget=)/gi,
+      '<a target="_blank" rel="noopener noreferrer"'
+    );
+    // ensure rel is present when target is present
+    const withRel = withTarget.replace(
+      /<a([^>]*\btarget=\"?_blank\"?)(?![^>]*\brel=)/gi,
+      '<a$1 rel="noopener noreferrer"'
+    );
+    // convert inline [1] style markers to links if references list exists
+    const hasRefs = /<ol[\s\S]*id=\"ref-\d+\"/i.test(withRel);
+    const withCitations = hasRefs
+      ? withRel.replace(/\[(\d+)\]/g, '<sup><a href="#ref-$1">[$1]</a></sup>')
+      : withRel;
+    return withCitations;
+  })();
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="grid lg:grid-cols-3 gap-8">
@@ -178,7 +200,7 @@ export default async function ArticlePage({ params }: Props) {
             <div className="px-8 pb-8">
               <div
                 className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-strong:text-gray-900 dark:prose-strong:text-white prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50 dark:prose-blockquote:bg-blue-900/20"
-                dangerouslySetInnerHTML={{ __html: article.content }}
+                dangerouslySetInnerHTML={{ __html: processedHtml }}
               />
             </div>
 
