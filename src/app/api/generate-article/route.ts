@@ -58,6 +58,8 @@ Format your response as JSON with these fields:
   "suggestedImageUrl": "URL of a suitable image for this article (or null if no good image found)"
 }
 
+For suggestedImageUrl: Suggest a DIFFERENT image URL from a reliable source (Reuters, AP, Getty Images, government sites, official accounts) that would be appropriate for this story. Do NOT suggest the same source image URL that was provided. If you cannot find a suitable alternative image URL, set it to null. Do not make up URLs.
+
 IMPORTANT: The content field should contain ONLY the article body paragraphs. Do NOT repeat the title or excerpt in the content. Start directly with the main article content using <p> tags.
 
 The content should be 3-5 paragraphs with proper HTML tags like <p>, <h2>, <h3>, etc. Do not include the title or excerpt in the content section.
@@ -78,7 +80,7 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
           role: "user",
           content: `Please transform this Facebook post into a professional news article:\n\n${sourceText}${
             sourceImageUrl ? `\n\nSource Image URL: ${sourceImageUrl}` : ""
-          }\n\nIf a source image is provided, consider it when writing the article. Also suggest a suitable image URL for the article (preferably from reliable news sources, government sites, or official social media accounts). If no good image is found, set suggestedImageUrl to null.`,
+          }\n\nIf a source image is provided, consider it when writing the article. For the suggestedImageUrl field, suggest a DIFFERENT image URL from a reliable news source (like Reuters, AP, Getty Images, government sites, or official accounts) that would be appropriate for this story. Do NOT suggest the same source image URL. If you cannot find a suitable alternative image URL, set suggestedImageUrl to null.`,
         },
       ],
       temperature: 0.7,
@@ -100,6 +102,7 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
     try {
       generatedData = JSON.parse(response);
       console.log("Successfully parsed JSON response");
+      console.log("AI suggested image URL:", generatedData.suggestedImageUrl);
     } catch (parseError) {
       console.log("JSON parsing failed, using fallback:", parseError);
       // Fallback if JSON parsing fails
@@ -107,6 +110,7 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
         title: extractTitleFromResponse(response),
         excerpt: extractExcerptFromResponse(response),
         content: response,
+        suggestedImageUrl: null,
       };
     }
 
@@ -116,13 +120,38 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
       finalTitle = finalTitle.substring(0, 67) + "...";
     }
 
+    // Always generate a new image using DALL-E
+    let finalImageUrl = null;
+
+    try {
+      console.log("Generating new image with DALL-E...");
+      const imageResponse = await openai.images.generate({
+        model: "dall-e-3",
+        prompt: `Professional news photo for article: "${finalTitle}". Conservative news style, high quality, photojournalistic.`,
+        size: "1024x1024",
+        quality: "standard",
+        n: 1,
+      });
+
+      if (imageResponse.data[0]?.url) {
+        finalImageUrl = imageResponse.data[0].url;
+        console.log("DALL-E generated image URL:", finalImageUrl);
+      }
+    } catch (imageError) {
+      console.log("DALL-E image generation failed:", imageError);
+      // Fallback to source image if DALL-E fails
+      finalImageUrl = sourceImageUrl || null;
+    }
+
+    console.log("Final image URL being returned:", finalImageUrl);
+
     return NextResponse.json({
       title: finalTitle,
       excerpt:
         generatedData.excerpt ||
         "Recent developments have sparked significant discussion and analysis.",
       content: generatedData.content || response,
-      imageUrl: generatedData.suggestedImageUrl || sourceImageUrl || null,
+      imageUrl: finalImageUrl,
     });
   } catch (error) {
     console.error("Error generating article:", error);

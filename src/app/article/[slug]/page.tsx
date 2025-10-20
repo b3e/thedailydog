@@ -246,7 +246,7 @@ export default async function ArticlePage({ params }: Props) {
               />
             </div>
 
-            {/* Source Material */}
+            {/* Source  Hidden 
             {article.sourceText && (
               <div className="mx-8 mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
@@ -270,7 +270,7 @@ export default async function ArticlePage({ params }: Props) {
                 </p>
               </div>
             )}
-
+    */}
             {/* Social Sharing */}
             <div className="px-8 pb-8">
               <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-6">

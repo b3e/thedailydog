@@ -1,4 +1,4 @@
-import { PrismaClient } from "../src/generated/prisma";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -33,6 +33,7 @@ async function main() {
         "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800&h=400&fit=crop",
       sourceText:
         "Just shared this important update on our Facebook page. The response has been overwhelming!",
+      topics: ["Politics", "Breaking News"],
       isFeatured: true,
       publishedAt: new Date(),
       authorId: admin.id,
@@ -48,6 +49,7 @@ async function main() {
         "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop",
       sourceText:
         "Shared this economic update on Facebook. Great discussion in the comments!",
+      topics: ["Economy"],
       isFeatured: false,
       publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
       authorId: admin.id,
@@ -63,6 +65,7 @@ async function main() {
         "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=400&fit=crop",
       sourceText:
         "This heartwarming story was shared on our Facebook page and got amazing engagement!",
+      topics: ["Culture", "Opinion"],
       isFeatured: false,
       publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
       authorId: admin.id,
