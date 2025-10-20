@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import Script from "next/script";
 import Header from "@/components/Header";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,7 +52,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
+        <Suspense fallback={<div className="h-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700" />}>
+          <Header />
+        </Suspense>
 
         <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <Providers>{children}</Providers>
