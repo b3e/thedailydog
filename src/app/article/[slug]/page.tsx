@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { headers } from "next/headers";
 import ShareBar from "@/components/ShareBar";
+import SubscriptionForm from "@/components/SubscriptionForm";
 
 interface Props {
   params: { slug: string };
@@ -389,22 +390,7 @@ export default async function ArticlePage({ params }: Props) {
             )}
 
             {/* Newsletter Signup */}
-            <div className="bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-900 rounded-xl p-6 text-white">
-              <h3 className="text-lg font-bold mb-3">Stay Updated</h3>
-              <p className="text-blue-100 text-sm mb-4">
-                Get the latest conservative news delivered to your inbox.
-              </p>
-              <div className="space-y-3">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full px-3 py-2 rounded text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white border-2 border-gray-300 dark:border-gray-600 "
-                />
-                <button className="w-full px-4 py-2 bg-white text-blue-600 font-semibold rounded hover:bg-gray-100 transition-colors duration-200">
-                  Subscribe
-                </button>
-              </div>
-            </div>
+            <SubscriptionForm source="article" className="mb-6" />
 
             {/* Trending Topics */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">

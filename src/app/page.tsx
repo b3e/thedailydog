@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import type { Article } from "@prisma/client";
+import SubscriptionForm from "@/components/SubscriptionForm";
 
 type HomeData = {
   featured: Article[];
@@ -343,23 +344,9 @@ export default async function Home({
         </section>
 
         {/* Newsletter Signup */}
-        <section className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-900 rounded-2xl p-8 text-white text-center">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold mb-4">Stay Informed</h2>
-            <p className="text-blue-100 mb-6">
-              Get the latest conservative news and commentary delivered to your
-              inbox.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white border-2 border-gray-300 dark:border-gray-600"
-              />
-              <button className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                Subscribe
-              </button>
-            </div>
+        <section className="py-16">
+          <div className="max-w-md mx-auto">
+            <SubscriptionForm source="homepage" />
           </div>
         </section>
 

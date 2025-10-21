@@ -57,6 +57,20 @@ model View {
   @@index([articleId, createdAt])
 }
 
+model Subscription {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  isActive    Boolean   @default(true)
+  subscribedAt DateTime @default(now())
+  unsubscribedAt DateTime?
+  ipAddress   String?   // for GDPR compliance
+  userAgent   String?   // for GDPR compliance
+  source      String?   // where they subscribed from (homepage, article, etc.)
+  
+  @@index([email])
+  @@index([isActive])
+}
+
 enum Role {
   ADMIN
   EDITOR

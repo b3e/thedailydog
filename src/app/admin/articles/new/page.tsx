@@ -50,6 +50,10 @@ export default function NewArticlePage() {
           alert(
             "OpenAI API quota exceeded. Please check your billing details and add credits to your account."
           );
+        } else if (response.status === 408) {
+          alert(
+            "Request timed out. The AI generation process took too long. Please try again with shorter content or try again later."
+          );
         } else {
           alert(
             `Failed to generate article: ${

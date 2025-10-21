@@ -8,6 +8,10 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Configure API route timeout
+export const maxDuration = 60; // 60 seconds timeout for Vercel
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
@@ -35,63 +39,48 @@ export async function POST(request: NextRequest) {
     console.log("Starting OpenAI API call...");
     console.log("Source text length:", sourceText.length);
 
-    // Generate article content using ChatGPT
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `You are a conservative news writer for "The Daily Dog" - a patriotic American news outlet with the slogan "Guarding America's Values." 
+    // Generate article content using ChatGPT with timeout
+    const completion = await Promise.race([
+      openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are a conservative news writer for "The Daily Dog" - a patriotic American news outlet with the slogan "Guarding America's Values." 
 
-Your task is to transform Facebook post content into professional, well-structured news articles that:
+Transform Facebook post content into professional news articles that:
 - Maintain a conservative perspective
 - Use professional journalistic tone
 - Include proper HTML formatting
 - Are fact-based and objective
-- Appeal to patriotic Americans
-- Follow traditional news article structure
-- Include specific facts, figures, statistics, dates, and concrete details when possible
-- Provide context and background information to enhance understanding
-- Add relevant historical or comparative data to strengthen the story
-
-CRITICAL: Always try to include specific facts, figures, statistics, percentages, dollar amounts, dates, or other concrete details that add substance to the story. If the source material lacks specific data, use your knowledge to add relevant facts that support the narrative while maintaining accuracy.
+- Include specific facts, figures, and concrete details when possible
 
 Format your response as JSON with these fields:
 {
-  "title": "Compelling headline (max 70 characters - keep it concise but descriptive)",
+  "title": "Compelling headline (max 70 characters)",
   "excerpt": "Brief summary (max 150 characters)",
-  "content": "Full article body in HTML format with proper paragraphs, headings, etc.",
-  "suggestedImageUrl": "URL of a suitable image for this article (or null if no good image found)"
+  "content": "Full article body in HTML format with proper paragraphs",
+  "suggestedImageUrl": "URL of a suitable image (or null if no good image found)"
 }
 
-For suggestedImageUrl: Suggest a DIFFERENT image URL from a reliable source (Reuters, AP, Getty Images, government sites, official accounts) that would be appropriate for this story. Do NOT suggest the same source image URL that was provided. If you cannot find a suitable alternative image URL, set it to null. Do not make up URLs.
+For suggestedImageUrl: Suggest a DIFFERENT image URL from reliable sources (Reuters, AP, Getty Images, government sites) that would be appropriate for this story. Do NOT suggest the same source image URL. If you cannot find a suitable alternative, set it to null.
 
-IMPORTANT: The content field should contain ONLY the article body paragraphs. Do NOT repeat the title or excerpt in the content. Start directly with the main article content using <p> tags.
-
-The content should be 2-6 paragraphs with proper HTML tags like <p>, <h2>, <h3>, etc. Include specific facts, figures, and concrete details throughout. Do not include the title or excerpt in the content section.
-
-IMPORTANT: Only include a References section if you are actually citing specific external sources with real URLs. Do NOT include example references or placeholder URLs. If you don't have specific sources to cite, do not include a References section at all.
-
-When you do cite real sources, use this format:
-- In the text: Use bracketed citation markers like [1], [2], etc., immediately after the relevant sentence
-- At the end: Include a References section with this structure:
-<h2>References</h2>
-<ol>
-  <li id="ref-1"><a href="https://actual-source-url.com" target="_blank" rel="noopener noreferrer">Actual Source Title</a></li>
-</ol>
-
-Do not use example.com or placeholder URLs. Only cite sources you can verify exist.`,
-        },
-        {
-          role: "user",
-          content: `Please transform this Facebook post into a professional news article:\n\n${sourceText}${
-            sourceImageUrl ? `\n\nSource Image URL: ${sourceImageUrl}` : ""
-          }\n\nIf a source image is provided, consider it when writing the article. For the suggestedImageUrl field, suggest a DIFFERENT image URL from a reliable news source (like Reuters, AP, Getty Images, government sites, or official accounts) that would be appropriate for this story. Do NOT suggest the same source image URL. If you cannot find a suitable alternative image URL, set suggestedImageUrl to null.`,
-        },
-      ],
-      temperature: 0.7,
-      max_tokens: 2000,
-    });
+The content should be 4-6 paragraphs with proper HTML tags. Include specific facts and figures throughout. Do not include the title or excerpt in the content section.`,
+          },
+          {
+            role: "user",
+            content: `Please transform this Facebook post into a professional news article:\n\n${sourceText}${
+              sourceImageUrl ? `\n\nSource Image URL: ${sourceImageUrl}` : ""
+            }\n\nIf a source image is provided, consider it when writing the article. For the suggestedImageUrl field, suggest a DIFFERENT image URL from a reliable news source (like Reuters, AP, Getty Images, government sites, or official accounts) that would be appropriate for this story. Do NOT suggest the same source image URL. If you cannot find a suitable alternative image URL, set suggestedImageUrl to null.`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+      new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error("OpenAI API timeout after 45 seconds")), 45000)
+      )
+    ]) as Awaited<ReturnType<typeof openai.chat.completions.create>>;
 
     console.log("OpenAI API call completed successfully");
 
@@ -144,24 +133,31 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
 
     try {
       console.log("Generating new image with DALL-E...");
-      const imageResponse = await openai.images.generate({
-        model: "dall-e-3",
-        prompt: `Professional news photo for article: "${finalTitle}". Conservative news style, high quality, photojournalistic.`,
-        size: "1024x1024",
-        quality: "standard",
-        n: 1,
-      });
+      const imageResponse = await Promise.race([
+        openai.images.generate({
+          model: "dall-e-3",
+          prompt: `Professional news photo for article: "${finalTitle}". Conservative news style, high quality, photojournalistic.`,
+          size: "1024x1024",
+          quality: "standard",
+          n: 1,
+        }),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error("DALL-E API timeout after 30 seconds")), 30000)
+        )
+      ]) as Awaited<ReturnType<typeof openai.images.generate>>;
 
       if (imageResponse.data && imageResponse.data[0]?.url) {
         const dallEImageUrl = imageResponse.data[0].url;
         console.log("DALL-E generated image URL:", dallEImageUrl);
 
-        // Download and save the image to our server
+        // Download and save the image to our server with timeout
         const filename = generateImageFilename(finalTitle);
-        const savedImageUrl = await downloadAndSaveImage(
-          dallEImageUrl,
-          filename
-        );
+        const savedImageUrl = await Promise.race([
+          downloadAndSaveImage(dallEImageUrl, filename),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error("Image download timeout after 20 seconds")), 20000)
+          )
+        ]);
 
         if (savedImageUrl) {
           finalImageUrl = savedImageUrl;
@@ -175,6 +171,11 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
       console.log("DALL-E image generation failed:", imageError);
       // Fallback to source image if DALL-E fails
       finalImageUrl = sourceImageUrl || null;
+      
+      // If it's a timeout error, provide a more specific message
+      if (imageError instanceof Error && imageError.message.includes("timeout")) {
+        console.log("Image generation timed out, using fallback");
+      }
     }
 
     console.log("Final image URL being returned:", finalImageUrl);
@@ -204,6 +205,17 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
             "You have exceeded your current OpenAI API quota. Please add credits to your account.",
         },
         { status: 429 }
+      );
+    }
+
+    // Handle timeout errors
+    if (error instanceof Error && error.message.includes("timeout")) {
+      return NextResponse.json(
+        {
+          error: "Request timed out. Please try again with shorter content.",
+          details: "The AI generation process took too long. Try reducing the source text length.",
+        },
+        { status: 408 }
       );
     }
 
