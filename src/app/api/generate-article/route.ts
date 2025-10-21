@@ -77,10 +77,13 @@ The content should be 4-6 paragraphs with proper HTML tags. Include specific fac
         temperature: 0.7,
         max_tokens: 2000,
       }),
-      new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error("OpenAI API timeout after 45 seconds")), 45000)
-      )
-    ]) as Awaited<ReturnType<typeof openai.chat.completions.create>>;
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error("OpenAI API timeout after 45 seconds")),
+          45000
+        )
+      ),
+    ]);
 
     console.log("OpenAI API call completed successfully");
 
@@ -141,10 +144,13 @@ The content should be 4-6 paragraphs with proper HTML tags. Include specific fac
           quality: "standard",
           n: 1,
         }),
-        new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error("DALL-E API timeout after 30 seconds")), 30000)
-        )
-      ]) as Awaited<ReturnType<typeof openai.images.generate>>;
+        new Promise<never>((_, reject) =>
+          setTimeout(
+            () => reject(new Error("DALL-E API timeout after 30 seconds")),
+            30000
+          )
+        ),
+      ]);
 
       if (imageResponse.data && imageResponse.data[0]?.url) {
         const dallEImageUrl = imageResponse.data[0].url;
@@ -152,12 +158,16 @@ The content should be 4-6 paragraphs with proper HTML tags. Include specific fac
 
         // Download and save the image to our server with timeout
         const filename = generateImageFilename(finalTitle);
-        const savedImageUrl = await Promise.race([
+        const savedImageUrl = (await Promise.race([
           downloadAndSaveImage(dallEImageUrl, filename),
-          new Promise<never>((_, reject) => 
-            setTimeout(() => reject(new Error("Image download timeout after 20 seconds")), 20000)
-          )
-        ]) as string | null;
+          new Promise<never>((_, reject) =>
+            setTimeout(
+              () =>
+                reject(new Error("Image download timeout after 20 seconds")),
+              20000
+            )
+          ),
+        ])) as string | null;
 
         if (savedImageUrl) {
           finalImageUrl = savedImageUrl;
@@ -171,9 +181,12 @@ The content should be 4-6 paragraphs with proper HTML tags. Include specific fac
       console.log("DALL-E image generation failed:", imageError);
       // Fallback to source image if DALL-E fails
       finalImageUrl = sourceImageUrl || null;
-      
+
       // If it's a timeout error, provide a more specific message
-      if (imageError instanceof Error && imageError.message.includes("timeout")) {
+      if (
+        imageError instanceof Error &&
+        imageError.message.includes("timeout")
+      ) {
         console.log("Image generation timed out, using fallback");
       }
     }
@@ -213,7 +226,8 @@ The content should be 4-6 paragraphs with proper HTML tags. Include specific fac
       return NextResponse.json(
         {
           error: "Request timed out. Please try again with shorter content.",
-          details: "The AI generation process took too long. Try reducing the source text length.",
+          details:
+            "The AI generation process took too long. Try reducing the source text length.",
         },
         { status: 408 }
       );
