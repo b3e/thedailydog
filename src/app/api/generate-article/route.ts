@@ -101,11 +101,24 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
 
     let generatedData;
     try {
-      generatedData = JSON.parse(response);
+      // Clean the response by removing markdown code blocks if present
+      let cleanResponse = response.trim();
+      if (cleanResponse.startsWith("```json")) {
+        cleanResponse = cleanResponse
+          .replace(/^```json\s*/, "")
+          .replace(/\s*```$/, "");
+      } else if (cleanResponse.startsWith("```")) {
+        cleanResponse = cleanResponse
+          .replace(/^```\s*/, "")
+          .replace(/\s*```$/, "");
+      }
+
+      generatedData = JSON.parse(cleanResponse);
       console.log("Successfully parsed JSON response");
       console.log("AI suggested image URL:", generatedData.suggestedImageUrl);
     } catch (parseError) {
       console.log("JSON parsing failed, using fallback:", parseError);
+      console.log("Raw response:", response.substring(0, 500));
       // Fallback if JSON parsing fails
       generatedData = {
         title: extractTitleFromResponse(response),
