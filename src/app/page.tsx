@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import type { Article } from "@prisma/client";
 
@@ -133,13 +134,16 @@ export default async function Home({
                 </Link>
               </div>
               {hero.imageUrl && (
-                <div className="relative">
-                  <img
+                <div className="relative w-full h-96 rounded-xl shadow-2xl overflow-hidden">
+                  <Image
                     src={hero.imageUrl}
                     alt={hero.title}
-                    className="w-full h-96 object-cover rounded-xl shadow-2xl"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 </div>
               )}
             </div>
@@ -164,11 +168,13 @@ export default async function Home({
                   className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow duration-200"
                 >
                   {article.imageUrl && (
-                    <div className="aspect-video overflow-hidden">
-                      <img
+                    <div className="aspect-video relative overflow-hidden">
+                      <Image
                         src={article.imageUrl}
                         alt={article.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                        fill
+                        className="object-cover hover:scale-105 transition-transform duration-200"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       />
                     </div>
                   )}
@@ -284,11 +290,13 @@ export default async function Home({
                 className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-200 group"
               >
                 {article.imageUrl && (
-                  <div className="aspect-video overflow-hidden">
-                    <img
+                  <div className="aspect-video relative overflow-hidden">
+                    <Image
                       src={article.imageUrl}
                       alt={article.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-200"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     />
                   </div>
                 )}

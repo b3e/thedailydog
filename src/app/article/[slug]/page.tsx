@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import type { Article } from "@prisma/client";
 import Link from "next/link";
+import Image from "next/image";
 import { headers } from "next/headers";
 import ShareBar from "@/components/ShareBar";
 
@@ -191,10 +192,12 @@ export default async function ArticlePage({ params }: Props) {
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-red-600 rounded-full flex items-center justify-center">
-                      <img
+                      <Image
                         src="/logo.png"
                         alt="Daily Dog Logo"
-                        className="w-6 h-6 object-contain"
+                        width={24}
+                        height={24}
+                        className="object-contain"
                       />
                     </div>
                     <div>
@@ -227,11 +230,14 @@ export default async function ArticlePage({ params }: Props) {
             {/* Featured Image */}
             {article.imageUrl && (
               <div className="px-8 pb-6">
-                <div className="relative overflow-hidden rounded-lg">
-                  <img
+                <div className="relative w-full h-96 overflow-hidden rounded-lg">
+                  <Image
                     src={article.imageUrl}
                     alt={article.title}
-                    className="w-full h-96 object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                    priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 </div>
@@ -357,11 +363,13 @@ export default async function ArticlePage({ params }: Props) {
                     >
                       <div className="flex space-x-3">
                         {relatedArticle.imageUrl && (
-                          <div className="flex-shrink-0">
-                            <img
+                          <div className="flex-shrink-0 relative w-16 h-16">
+                            <Image
                               src={relatedArticle.imageUrl}
                               alt={relatedArticle.title}
-                              className="w-16 h-16 object-cover rounded-lg"
+                              fill
+                              className="object-cover rounded-lg"
+                              sizes="64px"
                             />
                           </div>
                         )}

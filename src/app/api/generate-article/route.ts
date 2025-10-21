@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import OpenAI from "openai";
+import { downloadAndSaveImage, generateImageFilename } from "@/lib/imageUtils";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Generate article content using ChatGPT
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4o",
       messages: [
         {
           role: "system",
@@ -134,8 +135,23 @@ Do not use example.com or placeholder URLs. Only cite sources you can verify exi
       });
 
       if (imageResponse.data && imageResponse.data[0]?.url) {
-        finalImageUrl = imageResponse.data[0].url;
-        console.log("DALL-E generated image URL:", finalImageUrl);
+        const dallEImageUrl = imageResponse.data[0].url;
+        console.log("DALL-E generated image URL:", dallEImageUrl);
+
+        // Download and save the image to our server
+        const filename = generateImageFilename(finalTitle);
+        const savedImageUrl = await downloadAndSaveImage(
+          dallEImageUrl,
+          filename
+        );
+
+        if (savedImageUrl) {
+          finalImageUrl = savedImageUrl;
+          console.log("Image saved locally:", finalImageUrl);
+        } else {
+          console.log("Failed to save image locally, using original URL");
+          finalImageUrl = dallEImageUrl;
+        }
       }
     } catch (imageError) {
       console.log("DALL-E image generation failed:", imageError);
