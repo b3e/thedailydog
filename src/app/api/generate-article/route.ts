@@ -154,10 +154,10 @@ The content should be 4-6 paragraphs with proper HTML tags. Include specific fac
         const filename = generateImageFilename(finalTitle);
         const savedImageUrl = await Promise.race([
           downloadAndSaveImage(dallEImageUrl, filename),
-          new Promise((_, reject) => 
+          new Promise<never>((_, reject) => 
             setTimeout(() => reject(new Error("Image download timeout after 20 seconds")), 20000)
           )
-        ]);
+        ]) as string | null;
 
         if (savedImageUrl) {
           finalImageUrl = savedImageUrl;
